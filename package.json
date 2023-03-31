@@ -1,0 +1,27 @@
+{
+  "name": "xendit-nodejs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "moment-timezone": "^0.5.43",
+    "morgan": "~1.9.1",
+    "mysql2": "^3.2.0",
+    "pg": "^8.10.0",
+    "sequelize": "^6.30.0",
+    "validatorjs": "^3.22.1",
+    "xendit-node": "^1.21.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

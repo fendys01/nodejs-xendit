@@ -1,6 +1,5 @@
 const Xendit = require('xendit-node');
 const dotenv = require('dotenv');
-
 dotenv.config();
 
 const x = new Xendit({

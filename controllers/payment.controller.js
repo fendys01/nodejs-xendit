@@ -2,25 +2,24 @@ const Validator = require('validatorjs')
 const Db = require("../models")
 const PaymentLog = Db.payment_log
 const x = require('../config/xendit.config')
-const { Balance } = x;
-const b = new Balance({});
-const VirtualAcc = x.VirtualAcc;
+const { Balance, VirtualAcc, RetailOutlet } = x;
+// const b = new Balance({});
+// const VirtualAcc = x.VirtualAcc;
 const va = new VirtualAcc({});
+const ro = new RetailOutlet({});
 const moment = require('moment-timezone')
 
 exports.bank_list = (req, res, next) => {
         
     (async function() {
-        try {            
-            let data = await PaymentLog.findOne({where:{order_id:123}})
-            res.send(data)
-            // let vaBank = await va.getVABanks();
-            // res.status(200).json({
-            //     code:200,
-            //     status:true,
-            //     message:'get data success',
-            //     result:vaBank
-            // })
+        try {                        
+            let vaBank = await va.getVABanks();
+            res.status(200).json({
+                code:200,
+                status:true,
+                message:'get data success',
+                result:vaBank
+            })
         } catch (e) {
           console.error(e); 
           return res.status(200).json({
@@ -60,7 +59,8 @@ exports.create_va = (req, res, next) => {
                 user_id:user_id,
                 amount:amount,
                 status:0,//default pending
-                xid:createVa.id
+                xid:createVa.id,
+                channel:'VA - ' + bank_code
             })                        
 
             res.status(200).json({
@@ -84,10 +84,7 @@ exports.callBack = (req, res, next) => {
     
     var { external_id, status } = req.body; 
     (async function() {
-        try {            
-            // return res.send({
-            //     external_id,status
-            // })
+        try {                        
             let getID = await PaymentLog.findOne({where:{order_id:external_id}})
             
             if (!getID) {
@@ -123,31 +120,69 @@ exports.callBack = (req, res, next) => {
       })();  
 }
 
+exports.CreateRetailCode = (req, res, next) => {            
+    (async function() {
+        var expTime = moment(new Date).add(1440, 'minutes') //expired set 24 hourse 		
+        // var utc = moment(setTime).format('YYYY-MM-DD HH:mm:ss')    
+        var { order_id, name, retail_code, amount,user_id } = req.body; 
+        try {                                   
+                        
+            let setIsClosed = false 
+            if (amount) 
+                setIsClosed = true
+                
+            let paramInput = {
+                externalID: order_id,
+                retailOutletName: retail_code,
+                name: name,
+                expectedAmt: amount,
+                expirationDate:expTime,
+                isSingleUse:true
+            }
+            // return res.send(paramInput)            
+            let pmCode = await ro.createFixedPaymentCode(paramInput);
+                               
+            await PaymentLog.create({
+                order_id:order_id,
+                user_id:user_id,
+                amount:amount,
+                status:1,//ro default active
+                xid:pmCode.id,
+                channel:'RO - ' + retail_code
+            })                        
+
+            res.status(200).json({
+                code:201,
+                status:true,
+                message:'create payment code success',
+                result:pmCode
+            })
+        } catch (e) {            
+            console.error(e); 
+            res.status(200).json({
+                code: 400,
+                status: false,
+                message: e,
+                result: []
+            })
+        }
+      })();  
+}
 exports.callBackPayment = (req, res, next) => {
     
-    var { external_id, status } = req.body; 
+    var { external_id, status,payment_id } = req.body; 
     (async function() {
         try {            
-            // return res.send({
-            //     external_id,status
-            // })
+            
             let getID = await PaymentLog.findOne({where:{order_id:external_id}})
             
-            if (!getID) {
-                return res.status(200).json({
-                    code: 404,
-                    status: false,
-                    message: 'order_id not found',            
-                    result: []
-                })
-            }
-            
-            if (status === 'ACTIVE') 
+            if (getID) {
                 await PaymentLog.update({
-                    status:1,
-                    log_json:JSON.stringify(req.body)
+                    status:2,// paid
+                    log_json:JSON.stringify(req.body),
+                    xpayment_id:payment_id
                 },{where:{order_id:external_id}}) //update payment status log
-            
+            }                                                    
             res.status(200).json({
                 code:200,
                 status:true,

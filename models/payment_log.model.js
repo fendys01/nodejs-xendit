@@ -30,7 +30,15 @@ module.exports = (sequelize, Sequelize) => {
         xid: {
             type: Sequelize.STRING(255),
             allowNull: true
+        },
+        channel: {
+            type: Sequelize.STRING(50),
+            allowNull: true
         },  
+        xpayment_id:{
+            type: Sequelize.STRING(50),
+            allowNull: true
+        }
     }, 
     {
         underscored: true,

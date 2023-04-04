@@ -10,6 +10,7 @@ const PaymnetController = require('../controllers/payment.controller');
 // route for company
 router.get('/va/bank_list',auth, PaymnetController.bank_list);
 router.post('/va/create_va', auth,PaymnetController.create_va);
+router.post('/va/create_fix_va', auth,PaymnetController.create_fix_va);
 // router.post('/va/notification_update', PaymnetController.callBack);
 router.post('/va/notification_payment',auth, PaymnetController.callBackPayment);
 router.post('/retail/create_payment_code', auth,PaymnetController.CreateRetailCode);

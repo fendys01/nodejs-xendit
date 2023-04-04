@@ -31,6 +31,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING(255),
             allowNull: true
         },
+        polis: {
+            type: Sequelize.BIGINT,
+            allowNull: true
+        },
         channel: {
             type: Sequelize.STRING(50),
             allowNull: true

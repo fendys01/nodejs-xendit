@@ -10,10 +10,10 @@ const sequelize = new Sequelize(
         port: dbConfig.PORT,
         dialect: dbConfig.dialect,
         dialectOptions: {
-            ssl: {
-                require:dbConfig.dialectOptions.ssl.require,
-                rejectUnauthorized: dbConfig.dialectOptions.ssl.rejectUnauthorized
-            }
+            // ssl: {
+            //     require:dbConfig.dialectOptions.ssl.require,
+            //     rejectUnauthorized: dbConfig.dialectOptions.ssl.rejectUnauthorized
+            // }
         },
         operatorAliases: dbConfig.operatorAliases,
         pool: {
@@ -37,5 +37,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.payment_log = require("./payment_log.model")(sequelize, Sequelize)
+db.sg_jiwa_reg = require("./sg_jiwa_reg")(sequelize, Sequelize)
 
 module.exports = db

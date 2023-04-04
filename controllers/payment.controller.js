@@ -8,11 +8,10 @@ const {
     VirtualAcc,
     RetailOutlet
 } = x;
-// const b = new Balance({});
-// const VirtualAcc = x.VirtualAcc;
 const va = new VirtualAcc({});
 const ro = new RetailOutlet({});
 const moment = require('moment-timezone');
+const AppHelper = require('../helper/AppHelper')
 
 exports.bank_list = (req, res, next) => {
 
@@ -132,10 +131,10 @@ exports.create_fix_va = (req, res, next) => {
                 vaData = await va.createFixedVA(paramInput); 
                 console.log(vaData.id);
 
-            } else { // update va
-                paramInput.id = getXID.xid
-                vaData = await va.updateFixedVA(paramInput);
-                console.log(vaData.id);
+            } else { // update va                
+                paramInput.id = getXID.xid                                
+                // vaData = await va.updateFixedVA(paramInput);  
+                vaData = await AppHelper.updateFixedVA(paramInput)
             }
 
             await PaymentLog.create({ // insert order id to log
